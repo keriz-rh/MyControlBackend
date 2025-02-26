@@ -26,10 +26,10 @@ const upload = multer({ storage });
 router.get('/', authMiddleware, getAllStudents);
 
 // Solo administradores pueden crear estudiantes
-router.post('/', authMiddleware, isAdmin, createStudent);
+router.post('/', authMiddleware, isAdmin, upload.single('foto'), createStudent);
 
 // Solo administradores pueden actualizar estudiantes
-router.put('/:id', authMiddleware, isAdmin, updateStudent);
+router.put('/:id', authMiddleware, isAdmin, upload.single('foto'), updateStudent);
 
 // Solo administradores pueden eliminar estudiantes
 router.delete('/:id', authMiddleware, isAdmin, deleteStudent);
