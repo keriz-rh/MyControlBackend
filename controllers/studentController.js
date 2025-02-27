@@ -54,6 +54,9 @@ const createStudent = async (req, res) => {
         // Obtener la ruta de la foto (si se proporciona)
         const foto = req.file ? req.file.path : null;
 
+        //convierte el JSON que viene cómo string
+        const padresArray = padres ? JSON.parse(padres) : [];
+
         // Crear el alumno
         const newStudentId = await Student.createStudentWithParents({
             nombre_completo,
@@ -67,7 +70,7 @@ const createStudent = async (req, res) => {
             id_grado,
             id_seccion,
             id_school,
-        }, padres || []);
+        }, padresArray);
 
         // Respuesta exitosa
         res.status(201).json({ success: true, id: newStudentId, message: 'Alumno y padres vinculados correctamente' });
@@ -95,10 +98,14 @@ const createStudent = async (req, res) => {
       // Adjuntar la foto al cuerpo de la solicitud
       const foto = req.file ? req.file.path : null;
   
+    // Convertir 'padres' a JSON viene como string
+    const padresArray = req.body.padres ? JSON.parse(req.body.padres) : [];
+
       // Actualizar el alumno
       const updated = await Student.updateStudent(id, {
         ...req.body,
         foto,
+        padres: padresArray
       });
   
       if (updated) {
