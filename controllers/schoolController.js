@@ -5,7 +5,12 @@ const { authMiddleware, isAdmin } = require('../middleware/authMiddleware');
 const getAllSchools = async (req, res) => {
     try {
         if (req.user.tipo !== 'Administrador') {
-            return res.status(403).json({ success: false, message: 'Acceso solo permitido a administradores' });
+
+            if (req.user.tipo == 'Usuario') {
+               return getSchoolsByUser(req, res);
+            } else{
+                return res.status(403).json({ success: false, message: 'Algo salio mal vuelve a intentarlo' });
+            }
         }
 
         const schools = await School.getAllSchools();
@@ -14,18 +19,18 @@ const getAllSchools = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error al obtener las escuelas', error: error.message });
     }
 };
-
 // Obtener escuelas vinculadas al usuario (para usuarios normales)
 const getSchoolsByUser = async (req, res) => {
     try {
+
         if (!req.user || !req.user.id_user) {
             return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
         }
-
-        const schools = await School.getSchoolsByUserId(req.user.id_user);
-        res.json({ success: true, data: schools });
+        console.log(req.user.id_user);
+                const schools = await School.getSchoolsByUserId(req.user.id_user);
+        return res.json({ success: true, data: schools });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Error al obtener las escuelas del usuario', error: error.message });
+       return res.json({ success: false, message: 'Error al obtener las escuelas del usuario', error: error.message });
     }
 };
 
@@ -69,7 +74,11 @@ const createSchool = async (req, res) => {
 const updateSchool = async (req, res) => {
     try {
         if (req.user.tipo !== 'Administrador') {
-            return res.status(403).json({ success: false, message: 'Acceso solo permitido a administradores' });
+
+            if (req.user.tipo !== 'Usuario') {
+               return res.status(403).json({ success: false, message: 'Algo salio mal vuelve a intentarlo' });
+            } 
+            
         }
 
         const { id_school } = req.params;

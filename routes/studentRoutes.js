@@ -20,9 +20,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-// Rutas protegidas para los alumnos
-
-// Los administradores pueden ver todos los estudiantes, los usuarios solo los de su escuela
 router.get('/', authMiddleware, getAllStudents);
 
 // Solo administradores pueden crear estudiantes

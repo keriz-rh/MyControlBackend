@@ -17,6 +17,7 @@ class Student {
                 a.id_grado,
                 a.id_seccion,
                 a.id_school,
+                s.nombre AS nombre_school,  -- Agregar el nombre de la escuela
                 p.id_padre,
                 p.nombre AS nombre_padre,
                 p.direccion AS direccion_padre,
@@ -28,6 +29,8 @@ class Student {
                 padres_alumnos pa ON a.id_alumno = pa.id_alumno
             LEFT JOIN 
                 padres p ON pa.id_padre = p.id_padre
+            LEFT JOIN 
+                school s ON a.id_school = s.id_school  -- Unir con la tabla school
         `);
     
         const estudiantes = rows.reduce((acc, row) => {
@@ -58,6 +61,7 @@ class Student {
                     id_grado: row.id_grado,
                     id_seccion: row.id_seccion,
                     id_school: row.id_school,
+                    nombre_school: row.nombre_school,  // Agregar el nombre de la escuela
                     padres: row.id_padre ? [{
                         id_padre: row.id_padre,
                         nombre: row.nombre_padre,
@@ -77,6 +81,7 @@ class Student {
         const [alumnos] = await db.query(`
             SELECT 
                 a.*, 
+                s.nombre AS nombre_school,  -- Agregar el nombre de la escuela
                 GROUP_CONCAT(
                     JSON_OBJECT(
                         'id_padre', p.id_padre,
@@ -87,6 +92,7 @@ class Student {
             FROM alumnos a
             LEFT JOIN padres_alumnos pa ON a.id_alumno = pa.id_alumno
             LEFT JOIN padres p ON pa.id_padre = p.id_padre
+            LEFT JOIN school s ON a.id_school = s.id_school  -- Unir con la tabla school
             WHERE a.id_school = ?
             GROUP BY a.id_alumno
         `, [id_school]);

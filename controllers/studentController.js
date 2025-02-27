@@ -2,38 +2,39 @@ const Student = require('../models/studentModel');
 
 // Obtener todos los alumnos (administrador) o alumnos de una escuela (usuario)
 const getAllStudents = async (req, res) => {
-    try {
-        let students;
-        if (req.user.tipo === 'Administrador') {
-            // Si es administrador, obtener todos los estudiantes
-            students = await Student.getAllStudents();
-        } else {
-            // Si es usuario, obtener solo los estudiantes de su escuela
-            students = await Student.getStudentsBySchool(req.user.id_school); // Asegúrate de que req.user.id_school esté disponible
-        }
+  try {
+      let students;
+      if (req.user.tipo === 'Administrador') {
+          // Si es administrador, obtener todos los estudiantes
+          students = await Student.getAllStudents();
+      } else {
+          // Si es usuario, obtener solo los estudiantes de su escuela
+          students = await Student.getStudentsBySchool(req.user.id_school); // Asegúrate de que req.user.id_school esté disponible
+      }
 
-        // Formatear la respuesta
-        const formattedStudents = students.map(student => ({
-            id_alumno: student.id_alumno, 
-            nombre_completo: student.nombre_completo,
-            direccion: student.direccion,
-            telefono: student.telefono,
-            email: student.email,
-            foto: student.foto, 
-            genero: student.genero,
-            latitud: student.latitud,
-            longitud: student.longitud,
-            id_grado: student.id_grado,
-            id_seccion: student.id_seccion,
-            id_school: student.id_school,
-            padres: student.padres || [] // Incluir los padres vinculados (o un array vacío si no hay padres)
-        }));
+      // Formatear la respuesta
+      const formattedStudents = students.map(student => ({
+          id_alumno: student.id_alumno, 
+          nombre_completo: student.nombre_completo,
+          direccion: student.direccion,
+          telefono: student.telefono,
+          email: student.email,
+          foto: student.foto, 
+          genero: student.genero,
+          latitud: student.latitud,
+          longitud: student.longitud,
+          id_grado: student.id_grado,
+          id_seccion: student.id_seccion,
+          id_school: student.id_school,
+          nombre_school: student.nombre_school, // Incluir el nombre de la escuela
+          padres: student.padres || [] // Incluir los padres vinculados (o un array vacío si no hay padres)
+      }));
 
-        res.json({ success: true, students: formattedStudents });
-    } catch (error) {
-        console.error('Error en getAllStudents:', error.message, error.stack); // Log detallado
-        res.status(500).json({ success: false, message: 'Error al obtener los alumnos' });
-    }
+      res.json({ success: true, students: formattedStudents });
+  } catch (error) {
+      console.error('Error en getAllStudents:', error.message, error.stack); // Log detallado
+      res.status(500).json({ success: false, message: 'Error al obtener los alumnos' });
+  }
 };
 
 const createStudent = async (req, res) => {
